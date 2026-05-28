@@ -1,0 +1,21 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Backups y temporales
+*.bak
+*.tmp
+*~
+
+# Datos sensibles (cuando haya backend)
+.env
+*.db
+*.sqlite
+node_modules/

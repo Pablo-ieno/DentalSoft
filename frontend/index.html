@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DentalSoft — Sistema de Gestión Odontológica</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --v50:#f5f3ff;--v100:#ede9fe;--v200:#ddd6fe;--v300:#c4b5fd;--v400:#a78bfa;--v500:#8b5cf6;--v600:#7c3aed;--v700:#6d28d9;--v800:#5b21b6;--v900:#4c1d95;
+  --g50:#fafafa;--g100:#f4f4f5;--g200:#e4e4e7;--g300:#d4d4d8;--g400:#a1a1aa;--g500:#71717a;--g600:#52525b;--g700:#3f3f46;--g800:#27272a;--g900:#18181b;
+  --white:#fff;--sidebar:224px;--topbar:60px;--radius:12px;--radius-sm:8px;
+}
+body{font-family:'DM Sans',sans-serif;background:#f0eeff;color:var(--g800);min-height:100vh;display:flex;flex-direction:column}
+
+/* ── LOGIN ── */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#e9e4ff 0%,#f8f7ff 50%,var(--v100) 100%)}
+.login-card{background:white;border-radius:24px;padding:48px 40px;width:400px;box-shadow:0 4px 40px rgba(109,40,217,.13);border:1px solid var(--v200)}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.login-logo-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--v500),var(--v700));border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:22px}
+.login-logo-text{font-family:'Playfair Display',serif;font-size:22px;color:var(--v800);font-weight:500}
+.login-logo-sub{font-size:11px;color:var(--g400);text-transform:uppercase;letter-spacing:1px;margin-top:-2px}
+.login-title{font-size:26px;font-weight:500;color:var(--g800);margin-bottom:6px}
+.login-sub{font-size:14px;color:var(--g400);margin-bottom:32px}
+.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.role-card{border:1.5px solid var(--g200);border-radius:var(--radius-sm);padding:14px 12px;cursor:pointer;transition:all .2s;text-align:center}
+.role-card:hover{border-color:var(--v400);background:var(--v50)}
+.role-card.active{border-color:var(--v500);background:var(--v50)}
+.role-card-icon{font-size:24px;margin-bottom:6px}
+.role-card-name{font-size:13px;font-weight:500;color:var(--g700)}
+.role-card-desc{font-size:11px;color:var(--g400);margin-top:2px}
+.login-field{margin-bottom:16px}
+.login-field label{font-size:13px;color:var(--g600);margin-bottom:6px;display:block;font-weight:500}
+.login-field input{width:100%;padding:11px 14px;border:1.5px solid var(--g200);border-radius:var(--radius-sm);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s;color:var(--g800)}
+.login-field input:focus{border-color:var(--v400)}
+.btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,var(--v500),var(--v700));color:white;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .2s;margin-top:4px}
+.btn-primary:hover{opacity:.9}
+.login-hint{font-size:12px;color:var(--g400);text-align:center;margin-top:16px}
+
+/* ── TOPBAR ── */
+#app{display:none;min-height:100vh;flex-direction:column}
+.topbar{height:var(--topbar);background:var(--v800);display:flex;align-items:center;padding:0 20px;gap:16px;position:sticky;top:0;z-index:100}
+.topbar-logo{font-family:'Playfair Display',serif;font-size:18px;color:white;font-weight:500;display:flex;align-items:center;gap:8px}
+.topbar-logo-dot{width:8px;height:8px;background:var(--v300);border-radius:50%}
+.topbar-date{font-size:13px;color:var(--v300)}
+.topbar-user{display:flex;align-items:center;gap:10px;padding:6px 12px;background:rgba(255,255,255,.12);border-radius:20px;border:1px solid rgba(255,255,255,.15)}
+.topbar-avatar{width:30px;height:30px;background:var(--v400);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:600}
+.topbar-user-name{font-size:13px;font-weight:500;color:white;line-height:1.2}
+.topbar-user-role{font-size:11px;color:var(--v300)}
+.btn-logout{padding:6px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;font-size:12px;color:white;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-logout:hover{background:rgba(255,255,255,.2)}
+
+/* ── LAYOUT ── */
+.app-body{display:flex;flex:1;min-height:0}
+.sidebar{width:var(--sidebar);background:var(--v900);padding:20px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;flex-shrink:0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;color:var(--v300);font-size:14px;font-weight:400;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+.nav-item:hover{background:rgba(255,255,255,.08);color:white}
+.nav-item.active{background:var(--v600);color:white;font-weight:500}
+.nav-item svg{width:18px;height:18px;flex-shrink:0}
+.nav-section{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--v400);padding:12px 12px 4px;margin-top:8px;opacity:.7}
+.main-content{flex:1;padding:28px;overflow-y:auto}
+
+/* ── PAGES ── */
+.page{display:none}
+.page.active{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.page-header{margin-bottom:24px}
+.page-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;color:var(--g800);margin-bottom:4px}
+.page-sub{font-size:14px;color:var(--g400)}
+
+/* ── CARDS ── */
+.card{background:white;border-radius:var(--radius);border:1px solid var(--v200);padding:20px}
+.card-sm{background:white;border-radius:var(--radius);border:1px solid var(--v200);padding:16px}
+
+/* ── STAT CARDS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:white;border-radius:var(--radius);border:1px solid var(--v200);padding:18px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--v400),var(--v600))}
+.stat-number{font-size:28px;font-weight:500;color:var(--v700);line-height:1}
+.stat-label{font-size:12px;color:var(--g400);margin-top:6px;text-transform:uppercase;letter-spacing:.5px}
+.stat-change{font-size:12px;color:#22c55e;margin-top:4px}
+
+/* ── CALENDAR ── */
+.calendar-grid{display:grid;grid-template-columns:1fr 340px;gap:20px}
+@media(max-width:900px){.calendar-grid{grid-template-columns:1fr}}
+.cal-nav{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.cal-month{font-size:18px;font-weight:500;color:var(--g800);flex:1}
+.cal-btn{width:32px;height:32px;border:1px solid var(--v200);background:var(--v50);border-radius:var(--radius-sm);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--v600);font-size:18px;line-height:1;transition:all .15s}
+.cal-btn:hover{background:var(--v100);border-color:var(--v400)}
+.week-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px}
+.week-day{text-align:center;font-size:11px;font-weight:600;color:var(--v600);padding:6px 0;text-transform:uppercase;letter-spacing:.5px}
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.day-cell{min-height:76px;border-radius:var(--radius-sm);border:1px solid var(--g100);padding:6px;cursor:pointer;transition:all .15s;background:white}
+.day-cell:hover{border-color:var(--v300);background:var(--v50)}
+.day-cell.today{border-color:var(--v500);background:var(--v50)}
+.day-cell.today .day-num{background:var(--v600);color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.day-cell.other-month{opacity:.3}
+.day-cell.selected{border-color:var(--v500);box-shadow:0 0 0 2px var(--v200)}
+.day-num{font-size:13px;font-weight:500;color:var(--g700);margin-bottom:4px;line-height:1}
+.day-apt-dot{background:var(--v100);color:var(--v700);font-size:10px;padding:2px 5px;border-radius:4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:2px solid var(--v500)}
+
+/* ── APPOINTMENTS ── */
+.apt-list{display:flex;flex-direction:column;gap:8px}
+.apt-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--v100);cursor:pointer;transition:all .15s;background:var(--v50)}
+.apt-item:hover{border-color:var(--v300);background:var(--v100)}
+.apt-time{font-size:12px;font-weight:700;color:var(--v600);min-width:42px}
+.apt-info{flex:1}
+.apt-name{font-size:13px;font-weight:500;color:var(--g700)}
+.apt-treatment{font-size:11px;color:var(--g400)}
+.badge{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;white-space:nowrap}
+.badge-confirmed{background:#dcfce7;color:#16a34a}
+.badge-pending{background:#fef9c3;color:#854d0e}
+.badge-cancelled{background:#fee2e2;color:#dc2626}
+
+/* ── BUTTONS ── */
+.btn{padding:9px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:6px;border:none}
+.btn-violet{background:linear-gradient(135deg,var(--v500),var(--v700));color:white}
+.btn-violet:hover{opacity:.9}
+.btn-outline{background:white;border:1px solid var(--v300);color:var(--v700)}
+.btn-outline:hover{border-color:var(--v500);background:var(--v50)}
+.btn-ghost{background:none;border:none;color:var(--v600);padding:6px 10px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500}
+.btn-ghost:hover{color:var(--v800)}
+.btn-wa{background:#25d366;color:white;padding:8px 14px;font-size:13px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;display:inline-flex;align-items:center;gap:6px;transition:opacity .2s}
+.btn-wa:hover{opacity:.9}
+
+/* ── FORMS ── */
+.form-grid{display:grid;gap:14px}
+.form-2{grid-template-columns:1fr 1fr}
+@media(max-width:600px){.form-2{grid-template-columns:1fr}}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-label{font-size:12px;font-weight:600;color:var(--v700);text-transform:uppercase;letter-spacing:.4px}
+.form-input,.form-select,.form-textarea{padding:10px 13px;border:1.5px solid var(--v200);border-radius:var(--radius-sm);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--g800);background:white;outline:none;transition:border .2s;width:100%}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--v500)}
+.form-textarea{resize:vertical;min-height:90px}
+.form-select{cursor:pointer}
+
+/* ── MODALS ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(76,29,149,.35);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:20px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(109,40,217,.2);animation:fadeIn .2s ease;border:1px solid var(--v200)}
+.modal-lg{max-width:640px}
+.modal-header{padding:24px 24px 0;display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;border-bottom:1px solid var(--v100);padding-bottom:16px}
+.modal-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:400;color:var(--v800)}
+.modal-sub{font-size:13px;color:var(--g400);margin-top:2px}
+.modal-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--v200);background:var(--v50);cursor:pointer;font-size:18px;color:var(--v600);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.modal-body{padding:0 24px 24px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--v100);display:flex;gap:10px;justify-content:flex-end;background:var(--v50);border-radius:0 0 20px 20px}
+
+/* ── PATIENTS ── */
+.patient-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.patient-card{background:white;border-radius:var(--radius);border:1px solid var(--v200);padding:18px;cursor:pointer;transition:all .15s}
+.patient-card:hover{border-color:var(--v400);box-shadow:0 4px 20px rgba(109,40,217,.1);transform:translateY(-1px)}
+.p-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--v300),var(--v500));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:white;margin-bottom:12px}
+.p-name{font-size:15px;font-weight:500;color:var(--g800);margin-bottom:4px}
+.p-info{font-size:12px;color:var(--g400);display:flex;flex-direction:column;gap:3px}
+.p-last{font-size:11px;color:var(--v600);margin-top:8px;font-weight:600}
+
+/* ── HISTORY TIMELINE ── */
+.h-timeline{display:flex;flex-direction:column}
+.h-item{display:flex;gap:16px;padding-bottom:20px;position:relative}
+.h-item::before{content:'';position:absolute;left:15px;top:30px;bottom:0;width:1px;background:var(--v200)}
+.h-item:last-child::before{display:none}
+.h-dot{width:30px;height:30px;border-radius:50%;background:var(--v100);border:2px solid var(--v400);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--v700);font-size:12px;font-weight:600;z-index:1}
+.h-content{flex:1}
+.h-date{font-size:11px;color:var(--v500);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.h-treatment{font-size:14px;font-weight:600;color:var(--g800);margin-bottom:4px}
+.h-notes{font-size:13px;color:var(--g500);line-height:1.5}
+.h-pay{display:inline-flex;align-items:center;gap:4px;background:#dcfce7;color:#16a34a;font-size:11px;padding:3px 9px;border-radius:20px;margin-top:6px;font-weight:500}
+
+/* ── ATTACHMENTS ── */
+.attach-zone{border:2px dashed var(--v300);border-radius:var(--radius-sm);padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--v50)}
+.attach-zone:hover{border-color:var(--v500);background:var(--v100)}
+.attach-zone.drag-over{border-color:var(--v600);background:var(--v100)}
+.attach-zone-icon{font-size:28px;margin-bottom:8px}
+.attach-zone-text{font-size:13px;color:var(--v700);font-weight:500}
+.attach-zone-sub{font-size:11px;color:var(--g400);margin-top:4px}
+.attach-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.attach-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:white;border:1px solid var(--v200);border-radius:var(--radius-sm)}
+.attach-icon{width:32px;height:32px;background:var(--v100);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.attach-name{font-size:12px;font-weight:500;color:var(--g700);flex:1}
+.attach-size{font-size:11px;color:var(--g400)}
+.attach-remove{background:none;border:none;color:var(--g300);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:4px;transition:color .15s}
+.attach-remove:hover{color:#dc2626}
+/* Attachments in history view */
+.h-attachments{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.h-attach-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:var(--v50);border:1px solid var(--v200);border-radius:6px;font-size:11px;color:var(--v700);cursor:pointer;transition:all .15s;font-weight:500}
+.h-attach-chip:hover{background:var(--v100);border-color:var(--v400)}
+
+/* ── SCHEDULE (hour view) ── */
+.sched-wrap{display:grid;grid-template-columns:56px 1fr;gap:0}
+.time-slot{height:64px;display:flex;align-items:flex-start;justify-content:flex-end;padding-right:12px;padding-top:4px;font-size:11px;color:var(--v500);font-weight:600}
+.hour-slot{height:64px;border-bottom:1px solid var(--v100);padding:4px 8px;cursor:pointer;transition:background .1s}
+.hour-slot:hover{background:var(--v50)}
+.hour-slot.has-apt{padding:4px}
+.slot-apt{background:var(--v100);border-left:3px solid var(--v500);border-radius:6px;padding:6px 10px;height:56px;display:flex;flex-direction:column;justify-content:center;cursor:pointer;transition:background .15s}
+.slot-apt:hover{background:var(--v200)}
+.slot-apt-name{font-size:12px;font-weight:600;color:var(--v800)}
+.slot-apt-treatment{font-size:11px;color:var(--v600)}
+
+/* ── REMINDERS ── */
+.reminder-item{background:white;border-radius:var(--radius);border:1px solid var(--v200);padding:18px;display:flex;align-items:center;gap:16px;margin-bottom:10px;transition:all .15s}
+.reminder-item:hover{border-color:var(--v400);background:var(--v50)}
+.rem-icon{width:44px;height:44px;background:var(--v100);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;background:var(--v100);padding:4px;border-radius:var(--radius-sm);margin-bottom:20px;width:fit-content}
+.tab{padding:7px 18px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--v600);border:none;background:none;font-family:'DM Sans',sans-serif}
+.tab.active{background:white;color:var(--v800);box-shadow:0 1px 4px rgba(109,40,217,.12)}
+
+/* ── SEARCH BAR ── */
+.search-bar{display:flex;align-items:center;gap:10px;background:white;border:1.5px solid var(--v200);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:20px;transition:border .2s}
+.search-bar:focus-within{border-color:var(--v500)}
+.search-bar input{flex:1;border:none;outline:none;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--g800);background:none}
+
+/* ── CHIPS ── */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.chip-v{background:var(--v100);color:var(--v700)}
+.chip-g{background:var(--g100);color:var(--g600)}
+.chip-green{background:#dcfce7;color:#16a34a}
+
+/* ── DETAIL HEADER ── */
+.detail-header{background:linear-gradient(135deg,var(--v100),var(--v50));border:1px solid var(--v300);border-radius:var(--radius);padding:24px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.detail-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--v400),var(--v700));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;color:white;flex-shrink:0;box-shadow:0 4px 16px rgba(109,40,217,.25)}
+
+/* ── WA PREVIEW ── */
+.wa-bubble{background:#e7ffd7;border-radius:12px;padding:16px;border:1px solid #b7f5a0}
+.wa-msg{font-size:14px;color:#1a1a1a;line-height:1.6;white-space:pre-line}
+.wa-time{font-size:10px;color:#aaa;text-align:right;margin-top:6px}
+
+/* ── ACCESS DENIED ── */
+.access-denied{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--g400)}
+.access-denied-icon{font-size:48px;margin-bottom:16px;opacity:.5}
+.access-denied-title{font-size:18px;font-weight:500;color:var(--g600);margin-bottom:8px}
+.access-denied-sub{font-size:14px;color:var(--g400)}
+
+/* ── MISC ── */
+.divider{height:1px;background:var(--v100);margin:16px 0}
+.empty-state{text-align:center;padding:40px 20px;color:var(--g400)}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:.4}
+.empty-text{font-size:14px}
+.spacer{flex:1}
+
+/* ── SECTION TITLE ── */
+.section-title{font-size:12px;font-weight:600;color:var(--v600);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main-content{padding:16px}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .dash-grid{grid-template-columns:1fr!important}
+}
+
+/* PERMISSION TOGGLES */
+.perm-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--v100)}
+.perm-row:last-child{border-bottom:none}
+.perm-label{font-size:13px;color:var(--g700);font-weight:500}
+.perm-desc{font-size:11px;color:var(--g400);margin-top:2px}
+.toggle{position:relative;width:42px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;background:var(--g200);border-radius:20px;cursor:pointer;transition:background .2s}
+.toggle input:checked+.toggle-track{background:var(--v500)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .2s;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle input:checked~.toggle-thumb{transform:translateX(18px)}
+.user-perm-card{background:white;border:1px solid var(--v200);border-radius:var(--radius);margin-bottom:14px;overflow:hidden}
+.user-perm-header{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--v50);border-bottom:1px solid var(--v100)}
+.user-perm-body{padding:4px 16px 4px}
+
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">🦷</div>
+      <div>
+        <div class="login-logo-text">DentalSoft</div>
+        <div class="login-logo-sub">Sistema de gestión</div>
+      </div>
+    </div>
+    <div class="login-title">Bienvenido</div>
+    <div class="login-sub">Seleccioná tu perfil e ingresá</div>
+    <div class="role-cards">
+      <div class="role-card active" onclick="selectRole('doctor')" id="role-doctor">
+        <div class="role-card-icon">👨‍⚕️</div>
+        <div class="role-card-name">Odontólogo</div>
+        <div class="role-card-desc">Acceso completo</div>
+      </div>
+      <div class="role-card" onclick="selectRole('secretary')" id="role-secretary">
+        <div class="role-card-icon">📋</div>
+        <div class="role-card-name">Secretaría</div>
+        <div class="role-card-desc">Según permisos</div>
+      </div>
+    </div>
+    <div class="login-field">
+      <label>Usuario</label>
+      <input type="text" id="login-user" value="dr.garcia">
+    </div>
+    <div class="login-field">
+      <label>Contraseña</label>
+      <input type="password" id="login-pass" value="1234">
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Ingresar al sistema</button>
+    <div class="login-hint">Demo: cualquier usuario/contraseña</div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo"><div class="topbar-logo-dot"></div>DentalSoft</div>
+    <div class="spacer"></div>
+    <div class="topbar-date" id="topbar-date"></div>
+    <div class="topbar-user">
+      <div class="topbar-avatar" id="topbar-av">DG</div>
+      <div>
+        <div class="topbar-user-name" id="topbar-name">Dr. García</div>
+        <div class="topbar-user-role" id="topbar-role">Odontólogo</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">Salir</button>
+  </div>
+
+  <div class="app-body">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="nav-section">Principal</div>
+      <button class="nav-item active" onclick="nav('dashboard',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Inicio
+      </button>
+      <button class="nav-item" onclick="nav('agenda',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Agenda
+      </button>
+      <button class="nav-item" onclick="nav('schedule',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+        Turnos del día
+      </button>
+
+      <div class="nav-section">Pacientes</div>
+      <button class="nav-item" onclick="nav('patients',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Pacientes
+      </button>
+      <button class="nav-item" id="nav-history" onclick="navRestricted('history',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Historias clínicas
+      </button>
+
+      <div class="nav-section">Comunicación</div>
+      <button class="nav-item" onclick="nav('reminders',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Recordatorios
+        <span id="rem-badge" style="margin-left:auto;background:#22c55e;color:white;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600">3</span>
+      </button>
+
+      <div class="nav-section" id="sys-section">Sistema</div>
+      <button class="nav-item" id="nav-config" onclick="nav('config',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 1 0 4.93 19.07 10 10 0 0 0 19.07 4.93z"/></svg>
+        Configuración
+      </button>
+      <button class="nav-item" id="nav-backup" onclick="nav('backup',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Backup
+      </button>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content">
+
+      <!-- ──── DASHBOARD ──── -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div class="page-title">Buenos días 👋</div>
+          <div class="page-sub" id="dash-sub">Hoy es jueves 29 de mayo de 2025</div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-number">8</div><div class="stat-label">Turnos hoy</div><div class="stat-change">↑ 2 más que ayer</div></div>
+          <div class="stat-card"><div class="stat-number">142</div><div class="stat-label">Pacientes activos</div><div class="stat-change">↑ 3 este mes</div></div>
+          <div class="stat-card"><div class="stat-number">3</div><div class="stat-label">Recordatorios</div><div class="stat-change" style="color:#f59e0b">Para enviar hoy</div></div>
+          <div class="stat-card" id="stat-billing"><div class="stat-number">$185k</div><div class="stat-label">Facturado este mes</div><div class="stat-change">↑ 12% vs mes ant.</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:20px" class="dash-grid">
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+              <div class="section-title" style="margin-bottom:0">Turnos de hoy</div>
+              <button class="btn btn-outline" onclick="nav('agenda',null)" style="font-size:12px;padding:6px 12px">Ver agenda</button>
+            </div>
+            <div class="apt-list">
+              <div class="apt-item" onclick="openDetail('Laura Fernández')"><div class="apt-time">09:00</div><div class="apt-info"><div class="apt-name">Laura Fernández</div><div class="apt-treatment">Limpieza y blanqueamiento</div></div><span class="badge badge-confirmed">Confirmado</span></div>
+              <div class="apt-item" onclick="openDetail('Marcos Ruiz')"><div class="apt-time">10:30</div><div class="apt-info"><div class="apt-name">Marcos Ruiz</div><div class="apt-treatment">Control bimestral</div></div><span class="badge badge-confirmed">Confirmado</span></div>
+              <div class="apt-item" onclick="openDetail('Ana Gómez')"><div class="apt-time">11:30</div><div class="apt-info"><div class="apt-name">Ana Gómez</div><div class="apt-treatment">Extracción pieza 26</div></div><span class="badge badge-pending">Pendiente</span></div>
+              <div class="apt-item" onclick="openDetail('Roberto Silva')"><div class="apt-time">14:00</div><div class="apt-info"><div class="apt-name">Roberto Silva</div><div class="apt-treatment">Endodoncia — 1ra sesión</div></div><span class="badge badge-confirmed">Confirmado</span></div>
+              <div class="apt-item"><div class="apt-time">15:30</div><div class="apt-info"><div class="apt-name">Cecilia Torres</div><div class="apt-treatment">Ortodoncia — ajuste</div></div><span class="badge badge-confirmed">Confirmado</span></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div class="card-sm">
+              <div class="section-title">Recordatorios urgentes</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--v50);border-radius:var(--radius-sm);border:1px solid var(--v200)">
+                  <span style="font-size:16px">📱</span>
+                  <div style="flex:1"><div style="font-size:13px;font-weight:500">Laura Fernández</div><div style="font-size:11px;color:var(--g400)">Mañana 9:00 — Limpieza</div></div>
+                  <button class="btn-wa" onclick="previewWA('Laura Fernández','29 de mayo','9:00','Limpieza y blanqueamiento','351-555-0101')">Enviar</button>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--v50);border-radius:var(--radius-sm);border:1px solid var(--v200)">
+                  <span style="font-size:16px">📱</span>
+                  <div style="flex:1"><div style="font-size:13px;font-weight:500">Marcos Ruiz</div><div style="font-size:11px;color:var(--g400)">Mañana 10:30 — Control</div></div>
+                  <button class="btn-wa" onclick="previewWA('Marcos Ruiz','29 de mayo','10:30','Control bimestral','351-555-0202')">Enviar</button>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--v50);border-radius:var(--radius-sm);border:1px solid var(--v200)">
+                  <span style="font-size:16px">📱</span>
+                  <div style="flex:1"><div style="font-size:13px;font-weight:500">Ana Gómez</div><div style="font-size:11px;color:var(--g400)">Mañana 11:30 — Extracción</div></div>
+                  <button class="btn-wa" onclick="previewWA('Ana Gómez','29 de mayo','11:30','Extracción pieza 26','351-555-0303')">Enviar</button>
+                </div>
+              </div>
+            </div>
+            <div class="card-sm">
+              <div class="section-title">Acciones rápidas</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <button class="btn btn-violet" style="width:100%;justify-content:flex-start" onclick="openM('modal-apt')">＋ Nuevo turno</button>
+                <button class="btn btn-outline" style="width:100%;justify-content:flex-start" onclick="openM('modal-patient')">＋ Nuevo paciente</button>
+                <button class="btn btn-outline" style="width:100%;justify-content:flex-start" onclick="nav('reminders',null)">📲 Ver recordatorios</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ──── AGENDA ──── -->
+      <div class="page" id="page-agenda">
+        <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+          <div><div class="page-title">Agenda</div><div class="page-sub">Calendario de turnos</div></div>
+          <button class="btn btn-violet" onclick="openM('modal-apt')">＋ Nuevo turno</button>
+        </div>
+        <div class="calendar-grid">
+          <div class="card">
+            <div class="cal-nav">
+              <button class="cal-btn" onclick="changeMonth(-1)">‹</button>
+              <div class="cal-month" id="cal-label">Mayo 2025</div>
+              <button class="cal-btn" onclick="changeMonth(1)">›</button>
+            </div>
+            <div class="week-days">
+              <div class="week-day">Dom</div><div class="week-day">Lun</div><div class="week-day">Mar</div>
+              <div class="week-day">Mié</div><div class="week-day">Jue</div><div class="week-day">Vie</div><div class="week-day">Sáb</div>
+            </div>
+            <div class="month-grid" id="month-grid"></div>
+          </div>
+          <div>
+            <div class="card-sm">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                <div class="section-title" style="margin-bottom:0" id="sel-day-label">Seleccioná un día</div>
+                <button class="btn btn-violet" style="font-size:11px;padding:5px 12px" onclick="openM('modal-apt')">+ Turno</button>
+              </div>
+              <div class="apt-list" id="day-apts"><div class="empty-state"><div class="empty-icon">📅</div><div class="empty-text">Elegí un día del calendario</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ──── SCHEDULE ──── -->
+      <div class="page" id="page-schedule">
+        <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+          <div><div class="page-title">Turnos del día</div><div class="page-sub">Jueves 29 de mayo de 2025</div></div>
+          <button class="btn btn-violet" onclick="openM('modal-apt')">＋ Nuevo turno</button>
+        </div>
+        <div class="card" style="overflow:hidden">
+          <div class="sched-wrap">
+            <div id="sched-times" style="border-right:1px solid var(--v100)"></div>
+            <div id="sched-slots"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ──── PATIENTS ──── -->
+      <div class="page" id="page-patients">
+        <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+          <div><div class="page-title">Pacientes</div><div class="page-sub">Registro completo</div></div>
+          <button class="btn btn-violet" onclick="openM('modal-patient')">＋ Nuevo paciente</button>
+        </div>
+        <div class="search-bar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input placeholder="Buscar por nombre, teléfono o DNI..." oninput="filterP(this.value)">
+        </div>
+        <div class="patient-grid" id="patient-grid"></div>
+      </div>
+
+      <!-- ──── PATIENT DETAIL ──── -->
+      <div class="page" id="page-patient-detail">
+        <div class="page-header" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <button class="btn-ghost" onclick="nav('patients',null)">← Volver</button>
+          <div><div class="page-title" id="det-title">Paciente</div><div class="page-sub">Ficha completa</div></div>
+          <div style="margin-left:auto;display:flex;gap:8px" id="det-actions">
+            <button class="btn btn-outline" onclick="openM('modal-apt')">Nuevo turno</button>
+            <button class="btn btn-violet" id="btn-new-history" onclick="openM('modal-history')">+ Historia clínica</button>
+          </div>
+        </div>
+        <div id="det-body"></div>
+      </div>
+
+      <!-- ──── HISTORY ──── -->
+      <div class="page" id="page-history">
+        <div class="page-header"><div class="page-title">Historias clínicas</div><div class="page-sub">Historial clínico completo por paciente</div></div>
+        <div style="display:grid;grid-template-columns:260px 1fr;gap:20px">
+          <div class="card-sm">
+            <div class="search-bar" style="margin-bottom:10px;padding:8px 12px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              <input placeholder="Buscar..." oninput="filterH(this.value)" style="font-size:13px">
+            </div>
+            <div class="section-title">Pacientes</div>
+            <div id="h-patient-list"></div>
+          </div>
+          <div class="card"><div id="h-content"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Seleccioná un paciente para ver su historia clínica</div></div></div></div>
+        </div>
+      </div>
+
+      <!-- ──── REMINDERS ──── -->
+      <div class="page" id="page-reminders">
+        <div class="page-header"><div class="page-title">Recordatorios</div><div class="page-sub">Avisá a tus pacientes sobre sus turnos de mañana</div></div>
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab(this,'rem-pending')">Pendientes (3)</button>
+          <button class="tab" onclick="switchTab(this,'rem-sent')">Enviados hoy (2)</button>
+        </div>
+        <div id="rem-pending">
+          <div class="reminder-item"><div class="rem-icon">📱</div><div style="flex:1"><div style="font-size:14px;font-weight:500;color:var(--g800)">Laura Fernández</div><div style="font-size:12px;color:var(--g400);margin-top:2px">Jueves 29/05 · 9:00 hs · Limpieza y blanqueamiento</div><div style="font-size:11px;color:var(--g400)">📱 351-555-0101</div></div><button class="btn-wa" onclick="previewWA('Laura Fernández','29 de mayo','9:00','Limpieza y blanqueamiento','351-555-0101')">📲 Enviar recordatorio</button></div>
+          <div class="reminder-item"><div class="rem-icon">📱</div><div style="flex:1"><div style="font-size:14px;font-weight:500;color:var(--g800)">Marcos Ruiz</div><div style="font-size:12px;color:var(--g400);margin-top:2px">Jueves 29/05 · 10:30 hs · Control bimestral</div><div style="font-size:11px;color:var(--g400)">📱 351-555-0202</div></div><button class="btn-wa" onclick="previewWA('Marcos Ruiz','29 de mayo','10:30','Control bimestral','351-555-0202')">📲 Enviar recordatorio</button></div>
+          <div class="reminder-item"><div class="rem-icon">📱</div><div style="flex:1"><div style="font-size:14px;font-weight:500;color:var(--g800)">Ana Gómez</div><div style="font-size:12px;color:var(--g400);margin-top:2px">Jueves 29/05 · 11:30 hs · Extracción pieza 26</div><div style="font-size:11px;color:var(--g400)">📱 351-555-0303</div></div><button class="btn-wa" onclick="previewWA('Ana Gómez','29 de mayo','11:30','Extracción pieza 26','351-555-0303')">📲 Enviar recordatorio</button></div>
+        </div>
+        <div id="rem-sent" style="display:none">
+          <div class="reminder-item"><div class="rem-icon">✅</div><div style="flex:1"><div style="font-size:14px;font-weight:500;color:var(--g800)">Roberto Silva</div><div style="font-size:12px;color:var(--g400)">Jueves 29/05 · 14:00 hs · Endodoncia</div></div><div style="font-size:12px;color:#16a34a;font-weight:500">✓ Enviado 08:32</div></div>
+          <div class="reminder-item"><div class="rem-icon">✅</div><div style="flex:1"><div style="font-size:14px;font-weight:500;color:var(--g800)">Cecilia Torres</div><div style="font-size:12px;color:var(--g400)">Jueves 29/05 · 15:30 hs · Ortodoncia ajuste</div></div><div style="font-size:12px;color:#16a34a;font-weight:500">✓ Enviado 08:35</div></div>
+        </div>
+      </div>
+
+      <!-- ──── CONFIG ──── -->
+      <div class="page" id="page-config">
+        <div class="page-header"><div class="page-title">Configuración</div><div class="page-sub">Personalizá el sistema</div></div>
+        <div style="max-width:600px">
+          <div style="margin-bottom:24px">
+            <div class="section-title">Datos del consultorio</div>
+            <div class="form-grid form-2">
+              <div class="form-group"><label class="form-label">Nombre del profesional</label><input class="form-input" value="Dr. Martín García"></div>
+              <div class="form-group"><label class="form-label">Especialidad</label><input class="form-input" value="Odontología general"></div>
+              <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" value="+54 351 555-1234"></div>
+              <div class="form-group"><label class="form-label">WhatsApp (recordatorios)</label><input class="form-input" value="+54 351 555-1234"></div>
+              <div class="form-group" style="grid-column:span 2"><label class="form-label">Dirección</label><input class="form-input" value="Av. Colón 1234, Córdoba Capital"></div>
+            </div>
+          </div>
+          <div style="margin-bottom:24px">
+            <div class="section-title">Horario de atención</div>
+            <div class="form-grid form-2">
+              <div class="form-group"><label class="form-label">Hora inicio</label><input class="form-input" type="time" value="09:00"></div>
+              <div class="form-group"><label class="form-label">Hora fin</label><input class="form-input" type="time" value="18:00"></div>
+              <div class="form-group"><label class="form-label">Duración turno</label><select class="form-select"><option>30 min</option><option selected>45 min</option><option>60 min</option></select></div>
+              <div class="form-group"><label class="form-label">Días activos</label>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+                  <span class="chip chip-v">Lun</span><span class="chip chip-v">Mar</span><span class="chip chip-v">Mié</span><span class="chip chip-v">Jue</span><span class="chip chip-v">Vie</span><span class="chip chip-g">Sáb</span><span class="chip chip-g">Dom</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-bottom:28px">
+            <div class="section-title">Usuarios y permisos</div>
+            <div class="user-perm-card">
+              <div class="user-perm-header">
+                <div class="topbar-avatar">DG</div>
+                <div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--g800)">Dr. Martín García</div><div style="font-size:12px;color:var(--g400)">Odontólogo — Administrador del sistema</div></div>
+                <span class="chip chip-v">Acceso total</span>
+              </div>
+            </div>
+            <div class="user-perm-card">
+              <div class="user-perm-header">
+                <div class="topbar-avatar" style="background:linear-gradient(135deg,var(--v300),var(--v500))">SE</div>
+                <div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--g800)">Sofía Estévez</div><div style="font-size:12px;color:var(--g400)">Secretaria — permisos configurables</div></div>
+                <span class="chip chip-g">Personalizable</span>
+              </div>
+              <div class="user-perm-body">
+                <div class="perm-row"><div><div class="perm-label">Agenda y turnos</div><div class="perm-desc">Ver, crear y modificar turnos</div></div><label class="toggle"><input type="checkbox" checked disabled><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+                <div class="perm-row"><div><div class="perm-label">Pacientes</div><div class="perm-desc">Ver y editar datos de contacto</div></div><label class="toggle"><input type="checkbox" checked disabled><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+                <div class="perm-row"><div><div class="perm-label">Recordatorios WhatsApp</div><div class="perm-desc">Enviar avisos a pacientes</div></div><label class="toggle"><input type="checkbox" checked disabled><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+                <div class="perm-row"><div><div class="perm-label">Historias clínicas</div><div class="perm-desc">Ver y agregar registros clínicos y archivos</div></div><label class="toggle"><input type="checkbox" id="perm-historia" onchange="updatePerm('historia_clinica',this.checked)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+                <div class="perm-row"><div><div class="perm-label">Registrar pagos</div><div class="perm-desc">Ver y registrar montos cobrados en sesiones</div></div><label class="toggle"><input type="checkbox" id="perm-pagos" onchange="updatePerm('pagos',this.checked)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+                <div class="perm-row"><div><div class="perm-label">Ver facturación</div><div class="perm-desc">Acceso al resumen de ingresos del mes</div></div><label class="toggle"><input type="checkbox" id="perm-facturacion" onchange="updatePerm('facturacion',this.checked)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+              </div>
+            </div>
+            <button class="btn btn-outline" style="margin-top:4px">+ Agregar usuario</button>
+          </div>
+          <button class="btn btn-violet" onclick="saveConfig()">Guardar cambios</button>
+        </div>
+      </div>
+
+      <!-- ──── BACKUP ──── -->
+      <div class="page" id="page-backup">
+        <div class="page-header"><div class="page-title">Backup del sistema</div><div class="page-sub">Respaldo de la base de datos</div></div>
+        <div style="max-width:500px;display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div style="font-size:28px;margin-bottom:8px">☁️</div>
+            <div style="font-size:16px;font-weight:500;color:var(--g800);margin-bottom:4px">Backup a Google Drive</div>
+            <div style="font-size:13px;color:var(--g400);margin-bottom:16px">Copia comprimida en tu Google Drive personal. Los últimos 30 días se conservan automáticamente.</div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button class="btn btn-violet">Hacer backup ahora</button>
+              <span style="font-size:12px;color:var(--g400)">Último: hoy 03:00 hs ✓</span>
+            </div>
+          </div>
+          <div class="card">
+            <div style="font-size:28px;margin-bottom:8px">💾</div>
+            <div style="font-size:16px;font-weight:500;color:var(--g800);margin-bottom:4px">Exportar a carpeta local</div>
+            <div style="font-size:13px;color:var(--g400);margin-bottom:16px">Descargá el archivo de backup a tu PC o pen drive.</div>
+            <button class="btn btn-outline">Exportar archivo</button>
+          </div>
+          <div class="card-sm">
+            <div class="section-title">Historial de backups</div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--v100);font-size:13px"><span style="color:var(--g600)">Hoy 03:00 hs</span><span class="chip chip-green">✓ Exitoso</span></div>
+              <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--v100);font-size:13px"><span style="color:var(--g600)">Ayer 03:00 hs</span><span class="chip chip-green">✓ Exitoso</span></div>
+              <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:13px"><span style="color:var(--g600)">27/05 03:00 hs</span><span class="chip chip-green">✓ Exitoso</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-content -->
+  </div><!-- /app-body -->
+</div><!-- /app -->
+
+<!-- ═══ MODAL: NUEVO TURNO ═══ -->
+<div class="modal-overlay" id="modal-apt">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title">Nuevo turno</div><div class="modal-sub">Completá los datos del turno</div></div>
+      <button class="modal-close" onclick="closeM('modal-apt')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid form-2">
+        <div class="form-group" style="grid-column:span 2"><label class="form-label">Paciente</label>
+          <select class="form-select"><option>Seleccionar paciente...</option><option>Laura Fernández</option><option>Marcos Ruiz</option><option>Ana Gómez</option><option>Roberto Silva</option><option>Cecilia Torres</option><option>Pedro Martínez</option><option>Valentina Cruz</option><option>Diego Romero</option><option>+ Nuevo paciente</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" type="date" value="2025-05-29"></div>
+        <div class="form-group"><label class="form-label">Hora</label>
+          <select class="form-select"><option>09:00</option><option>09:30</option><option>10:00</option><option>10:30</option><option>11:00</option><option>11:30</option><option>12:00</option><option>12:30</option><option>14:00</option><option>14:30</option><option>15:00</option><option>15:30</option><option>16:00</option><option>16:30</option><option>17:00</option><option>17:30</option></select>
+        </div>
+        <div class="form-group" style="grid-column:span 2"><label class="form-label">Tratamiento</label>
+          <select class="form-select"><option>Consulta / Control</option><option>Limpieza dental</option><option>Blanqueamiento</option><option>Extracción</option><option>Endodoncia</option><option>Ortodoncia — ajuste</option><option>Restauración / Empaste</option><option>Corona / Prótesis</option><option>Implante</option><option>Otro</option></select>
+        </div>
+        <div class="form-group" style="grid-column:span 2"><label class="form-label">Notas (opcional)</label><textarea class="form-textarea" placeholder="Indicaciones previas, observaciones..."></textarea></div>
+        <div class="form-group"><label class="form-label">Estado</label><select class="form-select"><option>Confirmado</option><option>Pendiente</option></select></div>
+        <div class="form-group"><label class="form-label">Recordatorio WA</label><select class="form-select"><option>Sí — 1 día antes</option><option>No enviar</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeM('modal-apt')">Cancelar</button>
+      <button class="btn btn-violet" onclick="saveApt()">Guardar turno</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: NUEVO PACIENTE ═══ -->
+<div class="modal-overlay" id="modal-patient">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div><div class="modal-title">Nuevo paciente</div><div class="modal-sub">Registrá los datos del paciente</div></div>
+      <button class="modal-close" onclick="closeM('modal-patient')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="tabs" style="margin-bottom:16px">
+        <button class="tab active" onclick="tabSwitch(this,'pt-datos')">Datos personales</button>
+        <button class="tab" onclick="tabSwitch(this,'pt-medicos')">Antecedentes médicos</button>
+      </div>
+      <div id="pt-datos">
+        <div class="form-grid form-2">
+          <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" placeholder="Nombre"></div>
+          <div class="form-group"><label class="form-label">Apellido</label><input class="form-input" placeholder="Apellido"></div>
+          <div class="form-group"><label class="form-label">DNI</label><input class="form-input" placeholder="12.345.678"></div>
+          <div class="form-group"><label class="form-label">Fecha de nacimiento</label><input class="form-input" type="date"></div>
+          <div class="form-group"><label class="form-label">Teléfono / WhatsApp</label><input class="form-input" type="tel" placeholder="+54 351 555-0000"></div>
+          <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="email@ejemplo.com"></div>
+          <div class="form-group" style="grid-column:span 2"><label class="form-label">Dirección</label><input class="form-input" placeholder="Calle, número, ciudad"></div>
+          <div class="form-group"><label class="form-label">Obra social / Prepaga</label><input class="form-input" placeholder="OSDE, Swiss, particular..."></div>
+          <div class="form-group"><label class="form-label">Nº de afiliado</label><input class="form-input" placeholder="Opcional"></div>
+        </div>
+      </div>
+      <div id="pt-medicos" style="display:none">
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Alergias conocidas</label><textarea class="form-textarea" placeholder="Medicamentos, materiales dentales u otras alergias..."></textarea></div>
+          <div class="form-group"><label class="form-label">Enfermedades crónicas / Medicación habitual</label><textarea class="form-textarea" placeholder="Hipertensión, diabetes, anticoagulantes..."></textarea></div>
+          <div class="form-group"><label class="form-label">Observaciones generales</label><textarea class="form-textarea" placeholder="Fobia dental, necesita anestesia extra..."></textarea></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeM('modal-patient')">Cancelar</button>
+      <button class="btn btn-violet" onclick="savePatient()">Guardar paciente</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: HISTORIA CLÍNICA ═══ -->
+<div class="modal-overlay" id="modal-history">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div><div class="modal-title">Registrar atención</div><div class="modal-sub">Nueva entrada en historia clínica</div></div>
+      <button class="modal-close" onclick="closeM('modal-history')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid form-2">
+        <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" type="date" value="2025-05-29"></div>
+        <div class="form-group"><label class="form-label">Tratamiento</label>
+          <select class="form-select"><option>Consulta</option><option>Limpieza</option><option>Extracción</option><option>Endodoncia</option><option>Restauración</option><option>Blanqueamiento</option><option>Ortodoncia</option><option>Otro</option></select>
+        </div>
+        <div class="form-group" style="grid-column:span 2"><label class="form-label">Descripción / Notas clínicas</label><textarea class="form-textarea" placeholder="Procedimiento realizado, observaciones, próximos pasos..."></textarea></div>
+        <div class="form-group" style="grid-column:span 2"><label class="form-label">Materiales utilizados</label><input class="form-input" placeholder="Composito A2, anestesia lidocaína... (opcional)"></div>
+      </div>
+
+      <div class="divider"></div>
+      <div style="font-size:11px;font-weight:600;color:var(--v600);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Archivos adjuntos (RX, análisis, imágenes)</div>
+
+      <!-- DROP ZONE -->
+      <div class="attach-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+        <div class="attach-zone-icon">📎</div>
+        <div class="attach-zone-text">Arrastrá archivos aquí o hacé clic para seleccionar</div>
+        <div class="attach-zone-sub">JPG, PNG, PDF — hasta 20 MB por archivo</div>
+        <input type="file" id="file-input" multiple accept="image/*,.pdf" style="display:none" onchange="handleFiles(this.files)">
+      </div>
+      <div class="attach-list" id="attach-list"></div>
+
+      <div class="divider"></div>
+      <div style="font-size:11px;font-weight:600;color:var(--v600);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Registro de pago</div>
+      <div class="form-grid form-2">
+        <div class="form-group"><label class="form-label">Monto cobrado</label><input class="form-input" placeholder="$0"></div>
+        <div class="form-group"><label class="form-label">Forma de pago</label>
+          <select class="form-select"><option>Efectivo</option><option>Transferencia</option><option>Tarjeta débito</option><option>Tarjeta crédito</option><option>Obra social</option><option>Pendiente</option></select>
+        </div>
+        <div class="form-group" style="grid-column:span 2"><label class="form-label">Próximo turno sugerido</label><input class="form-input" placeholder="En 3 meses para control, o fecha específica..."></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeM('modal-history')">Cancelar</button>
+      <button class="btn btn-violet" onclick="saveHistory()">Guardar registro</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: WHATSAPP ═══ -->
+<div class="modal-overlay" id="modal-wa">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <div><div class="modal-title">Enviar recordatorio</div><div class="modal-sub">Revisá el mensaje antes de enviarlo</div></div>
+      <button class="modal-close" onclick="closeM('modal-wa')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="wa-bubble" style="margin-bottom:14px">
+        <div class="wa-msg" id="wa-preview"></div>
+        <div class="wa-time" id="wa-time"></div>
+      </div>
+      <div style="font-size:13px;color:var(--g500);background:var(--v50);padding:12px;border-radius:var(--radius-sm);border:1px solid var(--v200)">
+        💡 Al presionar "Abrir WhatsApp" se abrirá la app con este mensaje listo. Solo tocá <strong>Enviar</strong> en WhatsApp.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeM('modal-wa')">Cancelar</button>
+      <button class="btn-wa btn" id="wa-open-btn">📲 Abrir WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="display:none;position:fixed;bottom:24px;right:24px;background:var(--v800);color:white;padding:12px 20px;border-radius:var(--radius-sm);font-size:14px;z-index:2000;animation:fadeIn .3s ease;border:1px solid var(--v600)"></div>
+
+<script>
+const PATIENTS = [
+  {id:1,name:'Laura Fernández',ini:'LF',dob:'1985-03-12',dni:'28.456.789',phone:'351-555-0101',email:'laura.fernandez@gmail.com',obra:'OSDE',last:'29/05/2025',lastT:'Limpieza'},
+  {id:2,name:'Marcos Ruiz',ini:'MR',dob:'1978-07-22',dni:'22.345.678',phone:'351-555-0202',email:'marcos.ruiz@gmail.com',obra:'Particular',last:'15/04/2025',lastT:'Control'},
+  {id:3,name:'Ana Gómez',ini:'AG',dob:'1992-11-05',dni:'33.456.789',phone:'351-555-0303',email:'ana.gomez@gmail.com',obra:'Swiss Medical',last:'29/05/2025',lastT:'Extracción'},
+  {id:4,name:'Roberto Silva',ini:'RS',dob:'1965-02-18',dni:'16.789.012',phone:'351-555-0404',email:'roberto.silva@gmail.com',obra:'Medifé',last:'20/03/2025',lastT:'Endodoncia'},
+  {id:5,name:'Cecilia Torres',ini:'CT',dob:'1990-08-30',dni:'31.234.567',phone:'351-555-0505',email:'cecilia.torres@gmail.com',obra:'Particular',last:'10/05/2025',lastT:'Ortodoncia'},
+  {id:6,name:'Pedro Martínez',ini:'PM',dob:'1982-12-14',dni:'25.678.901',phone:'351-555-0606',email:'pedro.martinez@gmail.com',obra:'PAMI',last:'05/05/2025',lastT:'Restauración'},
+  {id:7,name:'Valentina Cruz',ini:'VC',dob:'2000-04-25',dni:'40.123.456',phone:'351-555-0707',email:'valentina.cruz@gmail.com',obra:'IOMA',last:'22/04/2025',lastT:'Blanqueamiento'},
+  {id:8,name:'Diego Romero',ini:'DR',dob:'1975-09-08',dni:'19.876.543',phone:'351-555-0808',email:'diego.romero@gmail.com',obra:'Galeno',last:'18/04/2025',lastT:'Limpieza'},
+];
+
+const HISTORIES = {
+  'Laura Fernández':[
+    {date:'29/05/2025',treatment:'Limpieza y blanqueamiento',notes:'Limpieza profesional completa. Blanqueamiento con peróxido de hidrógeno 35%. Excelentes resultados. Control recomendado en 6 meses.',pay:'$18.000',method:'Transferencia',files:['RX_panoramica_mayo25.jpg','Foto_antes.jpg','Foto_despues.jpg']},
+    {date:'20/11/2024',treatment:'Control y radiografías',notes:'Control de rutina. Radiografías panorámicas sin hallazgos relevantes. Leve acumulación de sarro inferior.',files:['RX_panoramica_nov24.pdf']},
+    {date:'15/06/2024',treatment:'Restauración pieza 16',notes:'Empaste con composite A2 en pieza 16. Preparación cavitaria mínima. Sin complicaciones.',pay:'$12.000',method:'Efectivo',files:[]},
+  ],
+  'Marcos Ruiz':[
+    {date:'15/04/2025',treatment:'Control bimestral ortodoncia',notes:'Ajuste de brackets superiores. Buena evolución del tratamiento.',pay:'$8.000',method:'Transferencia',files:['RX_lateral_abril25.jpg']},
+    {date:'12/02/2025',treatment:'Control bimestral ortodoncia',notes:'Ajuste de arco inferior. Se indica uso de elásticos intermaxilares.',files:[]},
+  ],
+  'Ana Gómez':[
+    {date:'29/05/2025',treatment:'Extracción pieza 26',notes:'Extracción simple con diagnóstico de caries profunda irreversible. Anestesia infiltrativa sin complicaciones. Se indicó antibiótico y analgésico.',pay:'$15.000',method:'Efectivo',files:['RX_pieza26_preop.jpg','Consentimiento_firmado.pdf']},
+    {date:'10/04/2025',treatment:'Consulta urgencia',notes:'Dolor espontáneo en pieza 26. Diagnóstico: pulpitis irreversible. Se planifica extracción.',files:['RX_diagnostica.jpg']},
+  ],
+  'Roberto Silva':[
+    {date:'20/03/2025',treatment:'Endodoncia pieza 46 — 2da sesión',notes:'Segunda sesión. Conductos instrumentados y obturados. Se programa corona.',pay:'$28.000',method:'Tarjeta crédito',files:['RX_conductometria.jpg','RX_postop.jpg']},
+    {date:'05/03/2025',treatment:'Endodoncia pieza 46 — 1ra sesión',notes:'Apertura cameral y conformación de conductos. Medicación intraconducto.',files:['RX_diagnostica_46.jpg']},
+  ],
+};
+
+const APPOINTMENTS = {
+  29:[
+    {time:'09:00',name:'Laura Fernández',treatment:'Limpieza y blanqueamiento',status:'confirmed'},
+    {time:'10:30',name:'Marcos Ruiz',treatment:'Control bimestral',status:'confirmed'},
+    {time:'11:30',name:'Ana Gómez',treatment:'Extracción pieza 26',status:'pending'},
+    {time:'14:00',name:'Roberto Silva',treatment:'Endodoncia — 1ra sesión',status:'confirmed'},
+    {time:'15:30',name:'Cecilia Torres',treatment:'Ortodoncia — ajuste',status:'confirmed'},
+  ],
+  12:[{time:'09:30',name:'Pedro Martínez',treatment:'Restauración',status:'confirmed'},{time:'11:00',name:'Diego Romero',treatment:'Consulta',status:'confirmed'}],
+  19:[{time:'10:00',name:'Valentina Cruz',treatment:'Blanqueamiento',status:'confirmed'},{time:'14:30',name:'Laura Fernández',treatment:'Control',status:'pending'}],
+};
+
+let role = 'doctor';
+let calY = 2025, calM = 4, selDay = 29;
+let waData = {};
+let pendingFiles = [];
+
+// ── ROLE & LOGIN ──
+function selectRole(r) {
+  role = r;
+  document.getElementById('role-doctor').classList.toggle('active', r==='doctor');
+  document.getElementById('role-secretary').classList.toggle('active', r==='secretary');
+  document.getElementById('login-user').value = r==='doctor' ? 'dr.garcia' : 'sofia.estevez';
+}
+
+function doLogin() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  const u = role==='doctor'
+    ? {name:'Dr. Martín García',rol:'Odontólogo',ini:'DG'}
+    : {name:'Sofía Estévez',rol:'Secretaria',ini:'SE'};
+  document.getElementById('topbar-av').textContent = u.ini;
+  document.getElementById('topbar-name').textContent = u.name;
+  document.getElementById('topbar-role').textContent = u.rol;
+  const d = new Date(2025,4,29);
+  const ds = d.toLocaleDateString('es-AR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('topbar-date').textContent = ds;
+  document.getElementById('dash-sub').textContent = 'Hoy es ' + ds;
+
+  // Secretary restrictions: hide config, backup, billing stat
+  if(role==='secretary') {
+    document.getElementById('nav-config').style.display = 'none';
+    document.getElementById('nav-backup').style.display = 'none';
+    document.getElementById('sys-section').style.display = 'none';
+    document.getElementById('stat-billing').style.display = 'none';
+    document.getElementById('btn-new-history').style.display = 'none';
+  } else {
+    document.getElementById('nav-config').style.display = '';
+    document.getElementById('nav-backup').style.display = '';
+    document.getElementById('sys-section').style.display = '';
+    document.getElementById('stat-billing').style.display = '';
+    document.getElementById('btn-new-history').style.display = '';
+  }
+  renderCal(); renderPatients(); renderHPatientList(); renderSchedule();
+}
+
+function doLogout() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+// ── NAVIGATION ──
+function nav(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pg = document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
+  if(el) el.classList.add('active');
+}
+
+function navRestricted(id, el) {
+  if(role === 'secretary' && !PERMS.historia_clinica) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('page-history').classList.add('active');
+    document.getElementById('h-content').innerHTML = `
+      <div class="access-denied">
+        <div class="access-denied-icon">🔒</div>
+        <div class="access-denied-title">Acceso restringido</div>
+        <div class="access-denied-sub">Las historias clínicas requieren permiso del odontólogo.<br>El Dr. García puede habilitarte el acceso desde <strong>Configuración → Usuarios y permisos</strong>.</div>
+      </div>`;
+    document.getElementById('h-patient-list').innerHTML = '';
+  } else {
+    nav(id, el);
+    renderHPatientList();
+  }
+}
+
+// ── MODALS ──
+function openM(id) { document.getElementById(id).classList.add('open'); }
+function closeM(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); });
+});
+
+// ── TABS ──
+function switchTab(btn, id) {
+  btn.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  ['rem-pending','rem-sent'].forEach(x => {
+    const el = document.getElementById(x);
+    if(el) el.style.display = x===id ? 'block' : 'none';
+  });
+}
+function tabSwitch(btn, id) {
+  btn.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  ['pt-datos','pt-medicos'].forEach(x => {
+    const el = document.getElementById(x);
+    if(el) el.style.display = x===id ? 'block' : 'none';
+  });
+}
+
+// ── CALENDAR ──
+const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+function renderCal() {
+  document.getElementById('cal-label').textContent = MONTHS[calM] + ' ' + calY;
+  const grid = document.getElementById('month-grid');
+  grid.innerHTML = '';
+  const first = new Date(calY,calM,1).getDay();
+  const total = new Date(calY,calM+1,0).getDate();
+  const prev = new Date(calY,calM,0).getDate();
+  for(let i=0;i<first;i++) addDayCell(grid,prev-first+i+1,'other-month',null);
+  for(let d=1;d<=total;d++){
+    const isToday=calY===2025&&calM===4&&d===29;
+    const isSel=d===selDay&&calY===2025&&calM===4;
+    addDayCell(grid,d,(isToday?'today':'')+(isSel?' selected':''),d);
+  }
+  const used=first+total;
+  const rem=(7-used%7)%7;
+  for(let i=1;i<=rem;i++) addDayCell(grid,i,'other-month',null);
+}
+function addDayCell(grid,d,cls,clickD){
+  const c=document.createElement('div');
+  c.className='day-cell '+cls;
+  const apts=APPOINTMENTS[d]||[];
+  let html='<div class="day-num">'+d+'</div>';
+  apts.slice(0,2).forEach(a=>{html+='<div class="day-apt-dot">'+a.time+' '+a.name.split(' ')[0]+'</div>';});
+  if(apts.length>2) html+='<div style="font-size:10px;color:var(--v400)">+' +(apts.length-2)+'</div>';
+  c.innerHTML=html;
+  if(clickD) c.onclick=()=>selectDay(clickD);
+  grid.appendChild(c);
+}
+function selectDay(d){
+  selDay=d; renderCal();
+  const lbl=document.getElementById('sel-day-label');
+  if(lbl) lbl.textContent=(calY===2025&&calM===4&&d===29?'Hoy · ':'')+d+' de '+MONTHS[calM].toLowerCase();
+  const cont=document.getElementById('day-apts');
+  if(!cont) return;
+  const apts=APPOINTMENTS[d]||[];
+  if(!apts.length){cont.innerHTML='<div class="empty-state"><div class="empty-icon">✨</div><div class="empty-text">Sin turnos este día</div></div>';return;}
+  cont.innerHTML=apts.map(a=>`
+    <div class="apt-item" onclick="openDetail('${a.name}')">
+      <div class="apt-time">${a.time}</div>
+      <div class="apt-info"><div class="apt-name">${a.name}</div><div class="apt-treatment">${a.treatment}</div></div>
+      <span class="badge ${a.status==='confirmed'?'badge-confirmed':'badge-pending'}">${a.status==='confirmed'?'Confirmado':'Pendiente'}</span>
+    </div>`).join('');
+}
+function changeMonth(dir){
+  calM+=dir;
+  if(calM<0){calM=11;calY--;} if(calM>11){calM=0;calY++;}
+  renderCal();
+}
+
+// ── SCHEDULE ──
+function renderSchedule(){
+  const times=['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00'];
+  const tc=document.getElementById('sched-times');
+  const sc=document.getElementById('sched-slots');
+  if(!tc||!sc) return;
+  tc.innerHTML='';sc.innerHTML='';
+  const apts=APPOINTMENTS[29]||[];
+  times.forEach(t=>{
+    const ts=document.createElement('div');ts.className='time-slot';ts.textContent=t;tc.appendChild(ts);
+    const slot=document.createElement('div');
+    const apt=apts.find(a=>a.time===t);
+    if(apt){
+      slot.className='hour-slot has-apt';
+      slot.innerHTML=`<div class="slot-apt" onclick="openDetail('${apt.name}')"><div class="slot-apt-name">${apt.name}</div><div class="slot-apt-treatment">${apt.treatment}</div></div>`;
+    }else{slot.className='hour-slot';slot.title='Horario libre — clic para agregar';slot.onclick=()=>openM('modal-apt');}
+    sc.appendChild(slot);
+  });
+}
+
+// ── PATIENTS ──
+function renderPatients(filter=''){
+  const grid=document.getElementById('patient-grid');
+  if(!grid) return;
+  const fl=PATIENTS.filter(p=>!filter||p.name.toLowerCase().includes(filter.toLowerCase())||p.dni.includes(filter)||p.phone.includes(filter));
+  grid.innerHTML=fl.map(p=>`
+    <div class="patient-card" onclick="openDetail('${p.name}')">
+      <div class="p-avatar">${p.ini}</div>
+      <div class="p-name">${p.name}</div>
+      <div class="p-info"><span>🪪 ${p.dni}</span><span>📱 ${p.phone}</span><span>🏥 ${p.obra}</span></div>
+      <div class="p-last">Última visita: ${p.last} — ${p.lastT}</div>
+    </div>`).join('');
+}
+function filterP(v){renderPatients(v);}
+
+// ── HISTORY LIST ──
+function renderHPatientList(filter=''){
+  const ul=document.getElementById('h-patient-list');
+  if(!ul) return;
+  const fl=PATIENTS.filter(p=>!filter||p.name.toLowerCase().includes(filter.toLowerCase()));
+  ul.innerHTML=fl.slice(0,8).map(p=>`
+    <div onclick="showHistoryOf('${p.name}')" style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);cursor:pointer;transition:background .15s" onmouseover="this.style.background='var(--v50)'" onmouseout="this.style.background=''">
+      <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--v300),var(--v500));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0">${p.ini}</div>
+      <div><div style="font-size:13px;font-weight:500;color:var(--g700)">${p.name}</div><div style="font-size:11px;color:var(--g400)">${p.last}</div></div>
+    </div>`).join('');
+}
+function filterH(v){renderHPatientList(v);}
+
+function showHistoryOf(name){
+  const hs=HISTORIES[name]||[];
+  const cont=document.getElementById('h-content');
+  if(!cont) return;
+  cont.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-size:15px;font-weight:600;color:var(--g800)">${name}</div>
+      <button class="btn btn-violet" onclick="openM('modal-history')">+ Nueva entrada</button>
+    </div>`+(hs.length?buildTimeline(hs):'<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Sin registros aún</div></div>');
+}
+
+function buildTimeline(hs){
+  return `<div class="h-timeline">${hs.map((h,i)=>`
+    <div class="h-item">
+      <div class="h-dot">${i+1}</div>
+      <div class="h-content">
+        <div class="h-date">${h.date}</div>
+        <div class="h-treatment">${h.treatment}</div>
+        <div class="h-notes">${h.notes}</div>
+        ${h.pay?`<span class="h-pay">💳 ${h.pay} — ${h.method}</span>`:'<span style="font-size:11px;color:var(--g400);margin-top:4px;display:inline-block">Sin registro de pago</span>'}
+        ${h.files&&h.files.length?`<div class="h-attachments">${h.files.map(f=>`<span class="h-attach-chip" title="Ver archivo">${fileIcon(f)} ${f}</span>`).join('')}</div>`:''}
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function fileIcon(name){
+  if(name.match(/\.(jpg|jpeg|png|gif)$/i)) return '🖼️';
+  if(name.match(/\.pdf$/i)) return '📄';
+  return '📎';
+}
+
+// ── PATIENT DETAIL ──
+function openDetail(name){
+  const p=PATIENTS.find(x=>x.name===name);
+  if(!p) return;
+  const hs=HISTORIES[name]||[];
+  const age=2025-parseInt(p.dob.split('-')[0]);
+  document.getElementById('det-title').textContent=p.name;
+  const showHistory = role==='doctor' || PERMS.historia_clinica;
+  document.getElementById('det-body').innerHTML=`
+    <div class="detail-header">
+      <div class="detail-avatar">${p.ini}</div>
+      <div style="flex:1">
+        <div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--v800);margin-bottom:6px">${p.name}</div>
+        <div style="font-size:13px;color:var(--g600);display:flex;flex-wrap:wrap;gap:14px">
+          <span>📅 ${age} años</span><span>🪪 ${p.dni}</span><span>📱 ${p.phone}</span><span>📧 ${p.email}</span><span>🏥 ${p.obra}</span>
+        </div>
+      </div>
+      <button class="btn-wa" onclick="previewWA('${name}','próximo turno','horario a confirmar','consulta','${p.phone}')">📲 WhatsApp</button>
+    </div>
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-number">${hs.length}</div><div class="stat-label">Visitas registradas</div></div>
+      <div class="stat-card"><div class="stat-number">${p.last}</div><div class="stat-label">Última visita</div></div>
+    </div>
+    ${showHistory?`
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div class="section-title" style="margin-bottom:0">Historia clínica</div>
+        <button class="btn btn-violet" onclick="openM('modal-history')">+ Registrar atención</button>
+      </div>
+      ${hs.length?buildTimeline(hs):'<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Sin registros aún</div></div>'}
+    </div>`:`
+    <div class="card">
+      <div class="access-denied">
+        <div class="access-denied-icon">🔒</div>
+        <div class="access-denied-title">Historia clínica — acceso restringido</div>
+        <div class="access-denied-sub">Solo el odontólogo puede ver los registros clínicos, o si el Dr. García habilitó tu acceso en Configuración.</div>
+      </div>
+    </div>`}`;
+  nav('patient-detail',null);
+}
+
+// ── FILE ATTACHMENTS ──
+function dragOver(e){e.preventDefault();document.getElementById('drop-zone').classList.add('drag-over');}
+function dragLeave(e){document.getElementById('drop-zone').classList.remove('drag-over');}
+function dropFile(e){
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('drag-over');
+  handleFiles(e.dataTransfer.files);
+}
+function handleFiles(files){
+  Array.from(files).forEach(f=>{
+    if(f.size>20*1024*1024){showToast('⚠️ '+f.name+' supera 20 MB');return;}
+    pendingFiles.push(f);
+    renderAttachList();
+  });
+}
+function renderAttachList(){
+  const list=document.getElementById('attach-list');
+  if(!list) return;
+  list.innerHTML=pendingFiles.map((f,i)=>`
+    <div class="attach-item">
+      <div class="attach-icon">${fileIcon(f.name)}</div>
+      <div class="attach-name">${f.name}</div>
+      <div class="attach-size">${(f.size/1024).toFixed(0)} KB</div>
+      <button class="attach-remove" onclick="removeFile(${i})">×</button>
+    </div>`).join('');
+}
+function removeFile(i){pendingFiles.splice(i,1);renderAttachList();}
+
+// ── WHATSAPP ──
+function previewWA(name,date,time,treatment,phone){
+  const msg=`Hola ${name} 👋\n\nLe recordamos que tiene turno en el consultorio del *Dr. García* para el *${date}* a las *${time} hs*.\n\n🦷 Tratamiento: ${treatment}\n📍 Av. Colón 1234, Córdoba\n\nEsperamos contar con su presencia. Ante cualquier cambio, comuníquese con anticipación.\n\n¡Hasta pronto! 😊`;
+  waData={phone:phone.replace(/[^0-9]/g,''),msg};
+  document.getElementById('wa-preview').textContent=msg;
+  const now=new Date();
+  document.getElementById('wa-time').textContent=now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('wa-open-btn').onclick=openWA;
+  openM('modal-wa');
+}
+function openWA(){
+  window.open('https://wa.me/54'+waData.phone+'?text='+encodeURIComponent(waData.msg),'_blank');
+  closeM('modal-wa');
+  showToast('WhatsApp abierto — confirmá el envío en la app');
+}
+
+// ── SAVE ACTIONS ──
+function saveApt(){closeM('modal-apt');showToast('✓ Turno guardado correctamente');}
+function savePatient(){closeM('modal-patient');showToast('✓ Paciente registrado correctamente');}
+function saveHistory(){
+  const n=pendingFiles.length;
+  pendingFiles=[];
+  closeM('modal-history');
+  showToast('✓ Atención registrada'+(n?' · '+n+' archivo'+(n>1?'s':'')+' adjunto'+(n>1?'s':''):''));
+}
+
+// ── TOAST ──
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  setTimeout(()=>{t.style.display='none';},3200);
+}
+</script>
+</body>
+</html>
